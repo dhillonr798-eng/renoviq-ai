@@ -1,21 +1,40 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, DragEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, DragEvent, FormEvent, ReactNode, useEffect, useState } from "react";
 
 type AuthMode = "signin" | "signup" | "forgot";
 type GenerationState = "idle" | "loading" | "complete";
 
 const spaceTypes = [
-  "Interior",
   "Exterior",
+  "Interior",
   "Kitchen",
-  "Bedroom",
   "Bathroom",
+  "Bedroom",
   "Office",
-  "Living Room",
-  "Shop/Commercial",
 ] as const;
+
+const demoImages: Record<(typeof spaceTypes)[number], string> = {
+  Interior: "/images/gallery-living.jpg",
+  Exterior: "/images/gallery-exterior.jpg",
+  Kitchen: "/images/gallery-kitchen.jpg",
+  Bathroom: "/images/gallery-bathroom.jpg",
+  Bedroom: "/images/gallery-bedroom.jpg",
+  Office: "/images/gallery-office.jpg",
+};
+
+const demoTitles: Record<(typeof spaceTypes)[number], string> = {
+  Interior: "Premium Interior in Modern Luxury",
+  Exterior: "Modern Exterior Concept",
+  Kitchen: "Kitchen in Modern Luxury",
+  Bathroom: "Modern Bathroom Concept",
+  Bedroom: "Luxury Bedroom Result",
+  Office: "Modern Executive Office",
+};
+
+const whatsappLink =
+  "https://wa.me/917973928146?text=Hi%20Rana%20Design%20Studio%2C%20I%20tried%20RENOVIQ%20AI%20and%20want%20a%20real%20custom%20design%20for%20my%20project.";
 
 const styles = [
   "Modern Luxury",
@@ -163,6 +182,21 @@ function ImageFallback({ label }: { label: string }) {
       </span>
     </div>
   );
+}
+
+function FeatureIcon({ title }: { title: string }) {
+  const common = "fill-none stroke-current stroke-[1.8] stroke-linecap-round stroke-linejoin-round";
+  const paths: Record<string, ReactNode> = {
+    "AI Exterior Renovation": <><path d="M4 11 12 4l8 7" /><path d="M6 10v10h12V10" /><path d="M10 20v-6h4v6" /></>,
+    "AI Interior Design": <><path d="M5 13h14v6H5z" /><path d="M7 13V9a3 3 0 0 1 6 0v4" /><path d="M17 13v-3h2v3" /></>,
+    "Smart Style Detection": <><path d="m12 3 1.4 4.1L17.5 9l-4.1 1.4L12 14.5l-1.4-4.1L6.5 9l4.1-1.9Z" /><path d="m18 14 .7 2.1 2.1.9-2.1.7-.7 2.1-.9-2.1-2.1-.7 2.1-.9Z" /></>,
+    "Instant Before/After": <><path d="M12 4v16" /><path d="M4 6h16v12H4z" /><path d="M7 9h3" /><path d="M14 15h3" /></>,
+    "Ultra HD Renders": <><path d="M4 6h16v14H4z" /><path d="m7 16 3-4 3 3 2-2 3 3" /><path d="M8 9h.01" /></>,
+    "Commercial Design": <><path d="M5 20V5h10v15" /><path d="M15 10h4v10" /><path d="M8 8h2M8 12h2M8 16h2" /></>,
+    "Virtual Renovation Preview": <><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6Z" /><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" /></>,
+    "AI Material Suggestions": <><path d="M4 7h16" /><path d="M7 4v16" /><path d="M4 13h16" /><path d="M13 4v16" /></>,
+  };
+  return <svg viewBox="0 0 24 24" className={`h-7 w-7 text-[#f5d89a] ${common}`} aria-hidden="true">{paths[title]}</svg>;
 }
 
 function GalleryImage({
@@ -456,7 +490,7 @@ function UploadWorkflow({
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState("");
-  const [spaceType, setSpaceType] = useState("Interior");
+  const [spaceType, setSpaceType] = useState<(typeof spaceTypes)[number]>("Exterior");
   const [selectedStyle, setSelectedStyle] = useState("Modern Luxury");
   const [isDragging, setIsDragging] = useState(false);
   const [generationState, setGenerationState] = useState<GenerationState>("idle");
@@ -469,7 +503,7 @@ function UploadWorkflow({
 
   useEffect(() => {
     if (generationState !== "loading") return;
-    const timer = window.setTimeout(() => setGenerationState("complete"), 2600);
+    const timer = window.setTimeout(() => setGenerationState("complete"), 3000);
     return () => window.clearTimeout(timer);
   }, [generationState]);
 
@@ -513,10 +547,10 @@ function UploadWorkflow({
         <div className="mx-auto max-w-3xl text-center reveal">
           <p className="section-kicker">AI renovation workflow</p>
           <h2 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">
-            From source photo to premium concept in four steps.
+            Try a demo renovation concept before requesting real design work.
           </h2>
           <p className="mt-6 text-lg leading-8 text-[#f7eddb]/68">
-            A frontend-only product preview with free-credit rules, anti-abuse messages, style selection, progress, and before/after comparison.
+            Upload a photo, select a project type, and see a sample AI-style preview for lead generation.
           </p>
         </div>
 
@@ -553,7 +587,7 @@ function UploadWorkflow({
                   <img src={previewUrl} alt="Uploaded renovation source" className="absolute inset-0 h-full w-full object-contain p-4" />
                   {generationState === "loading" ? <div className="ai-scan absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,transparent,rgba(245,216,154,0.34),transparent)]" /> : null}
                   <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(5,4,3,0.96))] px-5 pb-5 pt-24">
-                    <p className="inline-flex bg-[#d9ad5f] px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-[#070604]">Full preview</p>
+                    <p className="inline-flex bg-[#d9ad5f] px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-[#070604]">Original Upload</p>
                     <p className="mt-3 break-words text-lg font-semibold text-white">{fileName}</p>
                   </div>
                 </>
@@ -625,6 +659,9 @@ function UploadWorkflow({
               >
                 {generationState === "loading" ? "Generating redesign..." : "Generate redesign"}
               </button>
+              <p className="text-sm leading-6 text-[#f7eddb]/58">
+                AI concept preview only. Final custom design is prepared by Rana Design Studio.
+              </p>
             </div>
           </div>
 
@@ -650,21 +687,25 @@ function UploadWorkflow({
           {generationState === "complete" ? (
             <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
               <div className="relative min-h-[340px] overflow-hidden border border-[#d9ad5f]/28 bg-[#050403]">
-                <ImageFallback label="Generated preview" />
-                <Image src="/luxury-ai-renovation-hero.png" alt="Generated redesign result" fill sizes="(max-width: 1024px) 100vw, 62vw" className="object-cover" />
+                <ImageFallback label={`${spaceType} demo`} />
+                <GalleryImage
+                  src={demoImages[spaceType]}
+                  alt={`${spaceType} demo redesign result`}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 {previewUrl ? <img src={previewUrl} alt="Original uploaded space" className="absolute inset-y-0 left-0 h-full w-full object-contain bg-[#050403]" style={{ clipPath: `inset(0 ${100 - comparison}% 0 0)` }} /> : null}
                 <div className="absolute inset-y-0 w-px bg-[#f5d89a]" style={{ left: `${comparison}%` }} />
                 <input value={comparison} min={8} max={92} type="range" onChange={(event) => setComparison(Number(event.target.value))} className="absolute bottom-5 left-1/2 w-[72%] -translate-x-1/2 accent-[#d9ad5f]" aria-label="Before after comparison" />
-                <span className="absolute left-4 top-4 bg-black/78 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[#f5d89a]">Before</span>
-                <span className="absolute right-4 top-4 bg-[#d9ad5f] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[#070604]">After</span>
+                <span className="absolute left-4 top-4 bg-black/78 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[#f5d89a]">Original Upload</span>
+                <span className="absolute right-4 top-4 bg-[#d9ad5f] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[#070604]">Demo Result</span>
               </div>
               <div className="border border-[#d9ad5f]/18 bg-[#120f0a] p-5">
                 <p className="section-kicker">Concept ready</p>
-                <h3 className="mt-3 text-2xl font-semibold text-white">{spaceType} in {selectedStyle}</h3>
-                <p className="mt-4 leading-7 text-[#f7eddb]/62">Email verification required before sharing exports. Cooldown may apply to repeated guest generations.</p>
-                <button onClick={() => onToast("Download prepared. Frontend-only demo export is simulated.")} className="mt-6 min-h-12 w-full bg-[#d9ad5f] px-5 text-sm font-black uppercase tracking-[0.12em] text-[#070604]">
-                  Download preview
+                <h3 className="mt-3 text-2xl font-semibold text-white">{demoTitles[spaceType]}</h3>
+                <p className="mt-4 leading-7 text-[#f7eddb]/62">AI concept preview only. Final custom design, drawings and execution guidance are prepared by Rana Design Studio.</p>
+                <button onClick={() => onToast("Consultation request prepared. This is a frontend-only demo.")} className="mt-6 min-h-12 w-full bg-[#d9ad5f] px-5 text-sm font-black uppercase tracking-[0.12em] text-[#070604]">
+                  Get Full Custom Design
                 </button>
               </div>
             </div>
@@ -724,29 +765,46 @@ function Pricing() {
 }
 
 function Contact() {
+  const [sent, setSent] = useState(false);
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSent(true);
+  }
+
   return (
     <section id="contact" className="bg-[#120f0a] px-5 py-24 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.85fr_1fr]">
         <div className="reveal">
           <p className="section-kicker">Contact</p>
-          <h2 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">Build a premium renovation pipeline with AI.</h2>
-          <p className="mt-6 leading-8 text-[#f7eddb]/64">Share a project brief and our studio team will help you turn AI concepts into a practical renovation direction.</p>
-          <button type="button" className="mt-7 inline-flex min-h-12 items-center justify-center bg-[#d9ad5f] px-6 text-sm font-black uppercase tracking-[0.12em] text-[#070604]">Book Consultation</button>
+          <h2 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">Need Real Custom Design?</h2>
+          <p className="mt-6 leading-8 text-[#f7eddb]/64">Contact Rana Design Studio for working drawings, elevation and interiors.</p>
+          <a href={whatsappLink} target="_blank" rel="noreferrer" className="mt-7 inline-flex min-h-12 items-center justify-center bg-[#d9ad5f] px-6 text-sm font-black uppercase tracking-[0.12em] text-[#070604] transition hover:bg-[#f5d89a]">Book Consultation</a>
         </div>
-        <form className="reveal grid gap-4 border border-[#d9ad5f]/24 bg-[#080604] p-6">
-          <input className="auth-input" placeholder="Full name" />
-          <input className="auth-input" placeholder="Email address" />
-          <input className="auth-input" placeholder="Project type" />
-          <textarea className="auth-input min-h-32 resize-none" placeholder="Tell us about your space" />
-          <button type="button" className="min-h-13 bg-[#d9ad5f] px-6 text-sm font-black uppercase tracking-[0.12em] text-[#070604]">Send enquiry</button>
+        <form onSubmit={submit} className="reveal grid gap-4 border border-[#d9ad5f]/24 bg-[#080604] p-6">
+          <input className="auth-input" placeholder="Name" />
+          <input className="auth-input" placeholder="Phone" suppressHydrationWarning />
+          <input className="auth-input" placeholder="Project Type" />
+          <textarea className="auth-input min-h-32 resize-none" placeholder="Message" />
+          {sent ? <p className="border border-[#d9ad5f]/26 bg-[#1a1008] px-4 py-3 text-sm text-[#f5d89a]">Request received. Rana Design Studio will contact you soon.</p> : null}
+          <button type="submit" className="min-h-13 bg-[#d9ad5f] px-6 text-sm font-black uppercase tracking-[0.12em] text-[#070604] transition hover:bg-[#f5d89a]">Request Consultation</button>
         </form>
       </div>
-      <a href="#contact" className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full border border-[#f5d89a]/40 bg-[#d9ad5f] text-[#070604] shadow-[0_18px_60px_rgba(217,173,95,0.35)] transition hover:-translate-y-1 hover:bg-[#f5d89a]" aria-label="WhatsApp">
-        <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true">
-          <path fill="currentColor" d="M12.04 3.5a8.43 8.43 0 0 0-7.2 12.82L3.8 20.5l4.28-1a8.43 8.43 0 1 0 3.96-16Zm0 1.7a6.72 6.72 0 0 1 5.71 10.27 6.72 6.72 0 0 1-8.98 2.35l-.3-.18-2.08.49.5-2.02-.2-.32A6.72 6.72 0 0 1 12.04 5.2Zm-3.1 3.3c-.2 0-.52.08-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.22 3.08.15.2 2.08 3.33 5.14 4.53 2.54 1 3.06.8 3.61.75.56-.05 1.8-.73 2.05-1.44.26-.7.26-1.31.18-1.44-.08-.13-.28-.2-.59-.35-.3-.15-1.8-.89-2.08-.99-.28-.1-.48-.15-.69.15-.2.31-.79.99-.97 1.19-.18.2-.36.23-.66.08-.31-.15-1.3-.48-2.48-1.53-.92-.82-1.54-1.83-1.72-2.14-.18-.3-.02-.47.14-.62.14-.14.3-.36.46-.54.15-.18.2-.31.3-.51.1-.2.05-.38-.03-.53-.08-.15-.69-1.66-.94-2.27-.25-.6-.5-.52-.69-.53h-.42Z"/>
-        </svg>
-      </a>
     </section>
+  );
+}
+
+function WhatsAppFloatingButton() {
+  return (
+    <a
+  href={whatsappLink}
+  target="_blank"
+  rel="noreferrer"
+  className="fixed z-[9999] bottom-10 right-10 flex items-center gap-3 bg-[#d8ad55] text-black px-7 py-4 font-extrabold tracking-[0.14em] text-sm uppercase shadow-2xl hover:scale-105 transition-transform max-md:bottom-5 max-md:right-4 max-md:px-5 max-md:py-3 max-md:text-xs"
+>
+<span className="text-xl leading-none">☎</span>
+      <span className="whitespace-nowrap">Get Real Design</span>
+    </a>
   );
 }
 
@@ -763,6 +821,7 @@ export default function RenoviqPlatform() {
   }
 
   return (
+    <>
     <main className="min-h-screen overflow-hidden bg-[#070604] text-[#f7eddb]">
       {toast ? <Toast message={toast} onClose={() => setToast("")} /> : null}
       {authMode ? (
@@ -877,7 +936,9 @@ export default function RenoviqPlatform() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {features.map(([title, description]) => (
               <article key={title} className="reveal min-h-56 border border-[#d9ad5f]/20 bg-[#100d09] p-6 transition hover:-translate-y-1 hover:border-[#d9ad5f]/60">
-                <div className="h-12 w-12 border border-[#d9ad5f]/40 bg-[#d9ad5f]/12" />
+                <div className="grid h-12 w-12 place-items-center border border-[#d9ad5f]/40 bg-[#d9ad5f]/12">
+                  <FeatureIcon title={title} />
+                </div>
                 <h3 className="mt-6 text-xl font-semibold text-white">{title}</h3>
                 <p className="mt-4 text-sm leading-6 text-[#f7eddb]/60">{description}</p>
               </article>
@@ -993,5 +1054,7 @@ export default function RenoviqPlatform() {
         </p>
       </footer>
     </main>
+    <WhatsAppFloatingButton />
+    </>
   );
 }
